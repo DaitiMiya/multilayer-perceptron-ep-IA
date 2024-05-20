@@ -32,13 +32,25 @@ def mapear_valores(indices):
         valores_mapeados.append(list(resultado_esperado_indice))
     return valores_mapeados
 
+def get_validation_data():
+    matriz_pixels = read_txt(path_X)
+    matriz_train_test = matriz_pixels[0:50]
+
+    indices = list(range(len(matriz_train_test)))
+
+    # Embaralhando os índices
+    random.shuffle(indices)
+    # Criando uma nova matriz com a ordem dos arrays embaralhada
+    random_matriz_validacao = [matriz_pixels[i] for i in indices]
+
+    matriz_validacao_esperada = mapear_valores(indices)
+    return random_matriz_validacao, matriz_validacao_esperada
+
 def get_train_data(matriz_pixels):
     try:
         
-        matriz_train_test = matriz_pixels[0:936]
-        # matriz_train_test = matriz_pixels[0:52]
-        # random_matriz_train_test = random.sample(matriz_train_test,936)
-        # random_matriz_train_test = random.sample(matriz_train_test,52)
+        matriz_train_test = matriz_pixels[0:1196]
+
         indices = list(range(len(matriz_train_test)))
     
         # Embaralhando os índices
@@ -58,7 +70,7 @@ def get_resultado_esperado():
 
 def get_test_data(matriz_pixels):
     try:
-        matriz_train_test = matriz_pixels[936:1327]
+        matriz_train_test = matriz_pixels[1196:1327]
         indices = list(range(len(matriz_train_test)))
         
         # Embaralhando os índices
