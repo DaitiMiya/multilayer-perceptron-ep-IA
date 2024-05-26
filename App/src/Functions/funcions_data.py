@@ -1,5 +1,5 @@
 import numpy as np
-import random 
+from random import random, sample, shuffle
 
 path_X = 'Data/X.txt'
 path_y = 'Data/Y_letra.txt'
@@ -15,8 +15,10 @@ def get_train_test():
 
         #15 alfabetos(30% da base usada para treinamento)
         test, teste_resultado_esperado = get_test_data(matriz_pixels)
+        
+        validacao, validacao_esperada = get_validation_data(matriz_pixels)
         # print(teste_resultado_esperado)
-        return (train,treino_resultado_esperado, test, teste_resultado_esperado)
+        return (train,treino_resultado_esperado, test, teste_resultado_esperado, validacao, validacao_esperada)
     except Exception as e:    
         print('Erro ao gerar treino e teste')
         raise e
@@ -32,33 +34,33 @@ def mapear_valores(indices):
         valores_mapeados.append(list(resultado_esperado_indice))
     return valores_mapeados
 
-def get_validation_data():
-    matriz_pixels = read_txt(path_X)
-    matriz_train_test = matriz_pixels[0:50]
-
-    indices = list(range(len(matriz_train_test)))
-
-    # Embaralhando os índices
-    random.shuffle(indices)
-    # Criando uma nova matriz com a ordem dos arrays embaralhada
-    random_matriz_validacao = [matriz_pixels[i] for i in indices]
-
-    matriz_validacao_esperada = mapear_valores(indices)
-    return random_matriz_validacao, matriz_validacao_esperada
+#Justificar escolha de dados
+#Alfabetos inteiros(30 por cento da base +- 13 alfabetos)
+def get_validation_data(matriz_pixels):
+    indices_aleatorios = sample(range(0,338), 338)
+    # # Embaralhando os índices
+    random_matriz_train_test = [matriz_pixels[i] for i in indices_aleatorios]
+    matriz_validacao_esperada = mapear_valores(indices_aleatorios)
+    return random_matriz_train_test, matriz_validacao_esperada
 
 def get_train_data(matriz_pixels):
     try:
         
-        matriz_train_test = matriz_pixels[0:1196]
+        # matriz_train_test = matriz_pixels[338:1196]
+        indices_aleatorios = sample(range(338,1196), 858)
 
-        indices = list(range(len(matriz_train_test)))
+        
+        # indices = list(range(len(matriz_train_test)))
     
-        # Embaralhando os índices
-        random.shuffle(indices)
-        # Criando uma nova matriz com a ordem dos arrays embaralhada
-        random_matriz_train_test = [matriz_pixels[i] for i in indices]
-    
-        matriz_esperada = mapear_valores(indices)
+        # # Embaralhando os índices
+        # random.shuffle(indices)
+        # print(indices)
+        # # Criando uma nova matriz com a ordem dos arrays embaralhada
+        # random_matriz_train_test = [matriz_pixels[indices]]
+        random_matriz_train_test = [matriz_pixels[i] for i in indices_aleatorios]
+       
+        matriz_esperada = mapear_valores(indices_aleatorios)
+        print(matriz_esperada)
         return random_matriz_train_test, matriz_esperada
     except Exception as e:
         print('Error ao pegar array de treinamento')
@@ -70,15 +72,11 @@ def get_resultado_esperado():
 
 def get_test_data(matriz_pixels):
     try:
-        matriz_train_test = matriz_pixels[1196:1327]
-        indices = list(range(len(matriz_train_test)))
-        
-        # Embaralhando os índices
-        random.shuffle(indices)
 
+        indices_aleatorios = sample(range(1196,1326), 130)
         # Criando uma nova matriz com a ordem dos arrays embaralhada
-        random_matriz_train_test = [matriz_pixels[i] for i in indices]
-        matriz_esperada = mapear_valores(indices)
+        random_matriz_train_test = [matriz_pixels[i] for i in indices_aleatorios]
+        matriz_esperada = mapear_valores(indices_aleatorios)
         return random_matriz_train_test,matriz_esperada
     except Exception as e:
         print('Error ao pegar array de teste')
