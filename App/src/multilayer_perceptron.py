@@ -1,3 +1,13 @@
+#######################################################################
+#                Inteligencia Artificial - ACH2016                    #
+#                                                                     #
+#  Gandhi Daiti Miyahara 11207773                                     #
+#  Lucas Tatsuo Nishida 11208270                                      #
+#  Juan Kineipe 11894610                                              #
+#  Leonardo Ken Matsuda Cancela 11207665                              #
+#  João de Araújo Barbosa da Silva 11369704                           #
+#                                                                     #
+#######################################################################
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error as mse
@@ -43,16 +53,12 @@ def inicializando_pesos(tamanho_camada, neuronios):
     return np.round(pesos,2)
 
 
-def treina_sem_parada_antecipada(train, resultado_esperado,tamanho_camadas_entrada,tamanho_camadas_escondida, tamanho_camada_saida, Bias_entrada_camada_escondida, Bias_entrada_camada_saida, max_epocas,taxa_aprendizado):
+def treina_sem_validacao_cruzada(train, resultado_esperado,tamanho_camadas_entrada,tamanho_camadas_escondida, tamanho_camada_saida, Bias_entrada_camada_escondida, Bias_entrada_camada_saida, max_epocas,taxa_aprendizado):
     ativacao, derivada = funcao_ativacao()
     epoca_atual = 0
-    resultados_por_epoca = []
     condicao_de_parada = False
     pesos_camada_escondida = inicializando_pesos(tamanho_camadas_entrada, tamanho_camadas_escondida)
     pesos_camada_saida = inicializando_pesos(tamanho_camadas_escondida,tamanho_camada_saida)
-    
-    resultado_camada_escondida = []
-    resultado_camada_saida = []
     resultado_somatoria_erro = []
     resultado_acuracia = []
     #Feedforward
@@ -92,34 +98,40 @@ def treina_sem_parada_antecipada(train, resultado_esperado,tamanho_camadas_entra
 
         erro_medio = somatorio_erro / total
         acuracia = acertos / total
-       
+        resultado_acuracia.append(acuracia)
         resultado_somatoria_erro.append(erro_medio)
         if(erro_medio <= 0.0001):
             condicao_de_parada = True
         print(f'Epoca {epoca_atual}, Erro Médio {erro_medio}, Acurácia {acuracia}, Acertos {acertos}')
 
         epoca_atual += 1
+
+    print("\nGerando grafico de erro medio por epoca\n")
     plt.figure(figsize=(10, 6))
-    plt.plot(list(range(epoca_atual)), resultado_somatoria_erro, label='Acurácia Treinamento')
+    plt.plot(list(range(epoca_atual)), resultado_somatoria_erro, label='Erro medio por epoca')
     plt.xlabel('Época')
     plt.ylabel('Erro medio')
     plt.title('Erro medio por Época')
     plt.legend()
     plt.show()
+
+    print("\nGerando grafico de acuracia por epoca\n")
+    plt.figure(figsize=(10, 6))
+    plt.plot(list(range(epoca_atual)), resultado_acuracia, label='Acurácia Treinamento')
+    plt.xlabel('Época')
+    plt.ylabel('Acurácia')
+    plt.title('Acurácia de Treinamento e Validação por Época')
+    plt.legend()
+    plt.show()
     return pesos_camada_escondida, pesos_camada_saida
 
-def treina_com_parada_antecipada(train, resultado_esperado, validacao, resultado_validacao_esperada,tamanho_camadas_entrada,tamanho_camadas_escondida, tamanho_camada_saida, Bias_entrada_camada_escondida, Bias_entrada_camada_saida, max_epocas,taxa_aprendizado):
+def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado_validacao_esperada,tamanho_camadas_entrada,tamanho_camadas_escondida, tamanho_camada_saida, Bias_entrada_camada_escondida, Bias_entrada_camada_saida, max_epocas,taxa_aprendizado):
     ativacao, derivada = funcao_ativacao()
     epoca_atual = 0
-
     erro_medio_validacao_anterior = 100000   
-    resultados_por_epoca = []
     condicao_de_parada = False
     pesos_camada_escondida = inicializando_pesos(tamanho_camadas_entrada, tamanho_camadas_escondida)
     pesos_camada_saida = inicializando_pesos(tamanho_camadas_escondida,tamanho_camada_saida)
-
-    resultado_camada_escondida = []
-    resultado_camada_saida = []
     resultado_somatoria_erro = []
     acuracias_treinamento = []
     acuracias_validacao = []
@@ -202,6 +214,7 @@ def treina_com_parada_antecipada(train, resultado_esperado, validacao, resultado
             contador_paciente = 0
 
         if(contador_paciente == 30): break
+    print("\nGerando grafico de acuracia(treinamento e validacao)\n")
     plt.figure(figsize=(10, 6))
     plt.plot(list(range(epoca_atual)), acuracias_treinamento, label='Acurácia Treinamento')
     plt.plot(list(range(epoca_atual)), acuracias_validacao, label='Acurácia Validação')
@@ -210,8 +223,9 @@ def treina_com_parada_antecipada(train, resultado_esperado, validacao, resultado
     plt.title('Acurácia de Treinamento e Validação por Época')
     plt.legend()
     plt.show()
+    print("\nGerando grafico da evolução do erro\n")
     plt.figure(figsize=(10, 6))
-    plt.plot(list(range(epoca_atual)), resultado_somatoria_erro, label='Acurácia Treinamento')
+    plt.plot(list(range(epoca_atual)), resultado_somatoria_erro, label='Evolução do erro')
     plt.xlabel('Época')
     plt.ylabel('Erro medio')
     plt.title('Erro medio por Época')
@@ -220,6 +234,8 @@ def treina_com_parada_antecipada(train, resultado_esperado, validacao, resultado
     return pesos_camada_escondida, pesos_camada_saida
 
 def matriz_confusao(teste_predito, teste_esperado):
+    print("\n-------------------------------------------------\n")
+    print("Gerando matriz de confusao no console\n")
     matriz = np.zeros((26,26), dtype=int)
     acertos = 0
     index = 0
@@ -233,7 +249,7 @@ def matriz_confusao(teste_predito, teste_esperado):
         acertos+=linha[index]
         index += 1
         print(linha)
-    print(acertos)
+    print(f"\nTOTAL DE ACERTOS: {acertos}\n")
     return matriz
 
 

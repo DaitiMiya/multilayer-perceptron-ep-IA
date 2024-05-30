@@ -1,3 +1,13 @@
+#######################################################################
+#                Inteligencia Artificial - ACH2016                    #
+#                                                                     #
+#  Gandhi Daiti Miyahara 11207773                                     #
+#  Lucas Tatsuo Nishida 11208270                                      #
+#  Juan Kineipe 11894610                                              #
+#  Leonardo Ken Matsuda Cancela 11207665                              #
+#  João de Araújo Barbosa da Silva 11369704                           #
+#                                                                     #
+#######################################################################
 import numpy as np
 from random import random, sample, shuffle
 
@@ -60,7 +70,7 @@ def get_train_data(matriz_pixels):
         random_matriz_train_test = [matriz_pixels[i] for i in indices_aleatorios]
        
         matriz_esperada = mapear_valores(indices_aleatorios)
-        print(matriz_esperada)
+
         return random_matriz_train_test, matriz_esperada
     except Exception as e:
         print('Error ao pegar array de treinamento')
@@ -93,7 +103,6 @@ def read_txt(path_pixel):
                 # Convertendo a linha em uma lista de inteiros
                 array_pixels = list(map(int, linha.replace(",", "").strip().split()))
                 arrays_pixels.append(array_pixels)
-
 
         return arrays_pixels
     except Exception as e:
