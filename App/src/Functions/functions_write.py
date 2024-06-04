@@ -1,3 +1,13 @@
+#######################################################################
+#                Inteligencia Artificial - ACH2016                    #
+#                                                                     #
+#  Gandhi Daiti Miyahara 11207773                                     #
+#  Lucas Tatsuo Nishida 11208270                                      #
+#  Juan Kineipe 11894610                                              #
+#  Leonardo Ken Matsuda Cancela 11207665                              #
+#  João de Araújo Barbosa da Silva 11369704                           #
+#                                                                     #
+#######################################################################
 def write_pesos_iniciais_camada_Escondida_txt(pesos):
     f = open("Resultados/pesos_iniciais(camadaEscondida).txt", "w")
     for peso_iniciais in pesos:
