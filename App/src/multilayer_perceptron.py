@@ -11,6 +11,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error as mse
+from math import trunc
 
 class MultiLayerPerceptron(): 
     def __init__(self, params=None):     
@@ -44,6 +45,7 @@ def funcao_ativacao():
     derivada = (lambda x: x*(1-x))
     
     return ativacao, derivada
+
 
 def inicializando_pesos(tamanho_camada, neuronios):
     # Inicialização dos pesos e bias
@@ -100,7 +102,7 @@ def treina_sem_validacao_cruzada(train, resultado_esperado,tamanho_camadas_entra
         acuracia = acertos / total
         resultado_acuracia.append(acuracia)
         resultado_somatoria_erro.append(erro_medio)
-        if(erro_medio <= 0.0001):
+        if(round(erro_medio,4) <= 0.0006):
             condicao_de_parada = True
         print(f'Epoca {epoca_atual}, Erro Médio {erro_medio}, Acurácia {acuracia}, Acertos {acertos}')
 

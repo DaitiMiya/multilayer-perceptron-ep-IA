@@ -11,6 +11,7 @@
 import numpy as np
 from random import random, sample, shuffle
 
+
 path_X = 'Data/X.txt'
 path_y = 'Data/Y_letra.txt'
 path_resultado_esperado = 'Data/Y_classe.npy'
