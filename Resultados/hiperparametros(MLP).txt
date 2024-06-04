@@ -1,0 +1,1 @@
+{"TamanhoCamadaEntrada": 120, "TamanhoCamadaEscondida": 20, "TamanhoCamadaSaida": 26, "Epocas": 40, "TaxaDeAprendizado": 0.03, "BiasCamadaSaida": 1, "BiasCamadaEntrada": 1}

@@ -9,9 +9,11 @@
 #                                                                     #
 #######################################################################
 
-from Functions import funcions_data as func_data
+from Functions import functions_data as func_data
 import numpy as np
 from multilayer_perceptron import MultiLayerPerceptron, treina_sem_validacao_cruzada, treina_com_validacao_cruzada, teste_multilayer_perceptron
+from Functions.functions_write import write_pesos_finais_camada_Escondida_txt, write_pesos_finais_camada_Saida_txt,write_arch_rede_mlp
+import json 
 
 if __name__ == "__main__":
     print()
@@ -48,8 +50,9 @@ if __name__ == "__main__":
         dictionary = {'TamanhoCamadaEntrada':120, 'TamanhoCamadaEscondida':camada_escondida, 'TamanhoCamadaSaida':26,
                 'Epocas':num_epocas, 'TaxaDeAprendizado':taxa_aprendizado,'BiasCamadaSaida':1, 
                 'BiasCamadaEntrada':1}
+        
         Perceptron = MultiLayerPerceptron(dictionary)
-
+        write_arch_rede_mlp(json.dumps(dictionary))
         print("\nGerando conjuntos de treinamento, teste e validacao(se necessario)...\n")
         train,resultado_treino_esperado, teste, teste_resultado_esperado, validacao, resultado_validacao_esperada = func_data.get_train_test()
         print(f"Dados de treinamento: Total de {len(train)} dados de treinamento\n")
@@ -60,6 +63,10 @@ if __name__ == "__main__":
             print()
             print("Iniciando treinamento...\n")
             pesos_camada_escondida_sem_pa, pesos_camada_saida_sem_pa = treina_sem_validacao_cruzada(train, resultado_treino_esperado,Perceptron.tamanho_camadas_entrada,Perceptron.tamanho_camadas_escondida, Perceptron.tamanho_camadas_saida,Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.maximo_epocas, Perceptron.taxa_aprendizado)
+            write_pesos_finais_camada_Escondida_txt(pesos_camada_escondida_sem_pa)
+            write_pesos_finais_camada_Saida_txt(pesos_camada_saida_sem_pa)
+            print("\nSalvando pesos em arquivos...\n")
+            
             print("\nIniciando os testes...\n")
             teste_multilayer_perceptron(pesos_camada_escondida_sem_pa, pesos_camada_saida_sem_pa, teste, teste_resultado_esperado, Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.taxa_aprendizado)
         elif(rede_escolhida == 2):
@@ -67,16 +74,8 @@ if __name__ == "__main__":
             print()
             print("Iniciando treinamento...\n")
             pesos_camada_escondida_com_pa, pesos_camada_saida_com_pa = treina_com_validacao_cruzada(train, resultado_treino_esperado,validacao,resultado_validacao_esperada, Perceptron.tamanho_camadas_entrada,Perceptron.tamanho_camadas_escondida, Perceptron.tamanho_camadas_saida,Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.maximo_epocas, Perceptron.taxa_aprendizado)
+            write_pesos_finais_camada_Escondida_txt(pesos_camada_escondida_com_pa)
+            write_pesos_finais_camada_Saida_txt(pesos_camada_saida_com_pa)
             print("\nIniciando os testes...\n")
             teste_multilayer_perceptron(pesos_camada_escondida_com_pa, pesos_camada_saida_com_pa, teste, teste_resultado_esperado, Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.taxa_aprendizado)
             
-   
-
-    #inicializando os pesos
-    # pesos_entrada_camada_escondida, pesos_saida_camada_escondida = inicializando_pesos(Perceptron.tamanho_camadas_entrada,Perceptron.tamanho_camadas_escondida,Perceptron.tamanho_camadas_saida)
-
-    # pesos_camada_escondida_sem_pa, pesos_camada_saida_sem_pa = treina_sem_parada_antecipada(train, resultado_treino_esperado,Perceptron.tamanho_camadas_entrada,Perceptron.tamanho_camadas_escondida, Perceptron.tamanho_camadas_saida,Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.maximo_epocas, Perceptron.taxa_aprendizado)
-    # pesos_camada_escondida_com_pa, pesos_camada_saida_com_pa = treina_com_parada_antecipada(train, resultado_treino_esperado,validacao,resultado_validacao_esperada, Perceptron.tamanho_camadas_entrada,Perceptron.tamanho_camadas_escondida, Perceptron.tamanho_camadas_saida,Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.maximo_epocas, Perceptron.taxa_aprendizado)
-    
-    # # teste_multilayer_perceptron(pesos_camada_escondida_sem_pa, pesos_camada_saida_sem_pa, teste, teste_resultado_esperado, Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.taxa_aprendizado)
-    # teste_multilayer_perceptron(pesos_camada_escondida_com_pa, pesos_camada_saida_com_pa, teste, teste_resultado_esperado, Perceptron.bias_entrada_camada_escondida, Perceptron.bias_saida_camada_escondida, Perceptron.taxa_aprendizado)

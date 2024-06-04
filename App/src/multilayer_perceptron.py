@@ -11,7 +11,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error as mse
-from math import trunc
+from Functions.functions_write import write_pesos_iniciais_camada_Escondida_txt, write_pesos_iniciais_camada_Saida_txt, write_erro_por_epoca, write_resultado_rede
 
 class MultiLayerPerceptron(): 
     def __init__(self, params=None):     
@@ -60,9 +60,12 @@ def treina_sem_validacao_cruzada(train, resultado_esperado,tamanho_camadas_entra
     epoca_atual = 0
     condicao_de_parada = False
     pesos_camada_escondida = inicializando_pesos(tamanho_camadas_entrada, tamanho_camadas_escondida)
+    write_pesos_iniciais_camada_Escondida_txt(pesos_camada_escondida)
     pesos_camada_saida = inicializando_pesos(tamanho_camadas_escondida,tamanho_camada_saida)
+    write_pesos_iniciais_camada_Saida_txt(pesos_camada_saida)
     resultado_somatoria_erro = []
     resultado_acuracia = []
+
     #Feedforward
     while epoca_atual < max_epocas and not condicao_de_parada:
         somatorio_erro = 0
@@ -117,6 +120,8 @@ def treina_sem_validacao_cruzada(train, resultado_esperado,tamanho_camadas_entra
     plt.legend()
     plt.show()
 
+    write_erro_por_epoca(resultado_somatoria_erro)
+
     print("\nGerando grafico de acuracia por epoca\n")
     plt.figure(figsize=(10, 6))
     plt.plot(list(range(epoca_atual)), resultado_acuracia, label='Acurácia Treinamento')
@@ -133,10 +138,15 @@ def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado
     erro_medio_validacao_anterior = 100000   
     condicao_de_parada = False
     pesos_camada_escondida = inicializando_pesos(tamanho_camadas_entrada, tamanho_camadas_escondida)
+    write_pesos_iniciais_camada_Escondida_txt(pesos_camada_escondida)
     pesos_camada_saida = inicializando_pesos(tamanho_camadas_escondida,tamanho_camada_saida)
+    write_pesos_iniciais_camada_Saida_txt(pesos_camada_saida)
     resultado_somatoria_erro = []
     acuracias_treinamento = []
     acuracias_validacao = []
+    resultado_pesos_camada_escondida = []
+    resultado_pesos_camada_saida = []
+
     contador_paciente = 0
     while epoca_atual < max_epocas and not condicao_de_parada:
         erro_validacao = 0
@@ -148,22 +158,18 @@ def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado
         total_validaao = len(validacao)
         for treinamento_atual, resultado_esperado_atual in zip(train, resultado_esperado):
             # Feedforward
-            # print()
-            # print(f'TREINAMENTO ATUAL: {treinamento_atual}')
-            Ni_camada_escondida = np.dot(treinamento_atual , pesos_camada_escondida) + Bias_entrada_camada_escondida
-            # print(f'NEURONIO CAMADA ESCONDIDA: {Ni_camada_escondida}')
-            ativacao_camada_escondida = ativacao(Ni_camada_escondida)
-            # print(f'ATIVACAO CAMADA ESCONDIDA: {ativacao_camada_escondida}')
-            Ni_camada_saida = np.dot(ativacao_camada_escondida, pesos_camada_saida) + Bias_entrada_camada_saida
-            # print()
-            # print(f'NEURONIO CAMADA SAIDA: {ativacao_camada_escondida}')
-            ativacao_camada_saida = ativacao(Ni_camada_saida)
-            # print(f'ATIVACAO CAMADA SAIDA: {ativacao_camada_escondida}')
 
+            Ni_camada_escondida = np.dot(treinamento_atual , pesos_camada_escondida) + Bias_entrada_camada_escondida
+   
+            ativacao_camada_escondida = ativacao(Ni_camada_escondida)
+
+            Ni_camada_saida = np.dot(ativacao_camada_escondida, pesos_camada_saida) + Bias_entrada_camada_saida
+      
+            ativacao_camada_saida = ativacao(Ni_camada_saida)
+         
             # Calculo do erro
             erro = resultado_esperado_atual - ativacao_camada_saida
-            # print()
-            # print(f'ERRO: {erro}')
+
             somatorio_erro += np.mean(erro**2)
 
             # Avaliar acurácia
@@ -178,7 +184,8 @@ def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado
             # Atualizações de pesos (SGD)
             correcao_saida = taxa_aprendizado * np.outer(ativacao_camada_escondida, delta_saida)
             correcao_escondida = taxa_aprendizado * np.outer(treinamento_atual, delta_escondida)
-            
+            resultado_pesos_camada_escondida.append(pesos_camada_escondida)
+            resultado_pesos_camada_saida.append(pesos_camada_saida)
             pesos_camada_saida += correcao_saida
             pesos_camada_escondida += correcao_escondida
 
@@ -216,7 +223,9 @@ def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado
             contador_paciente = 0
 
         if(contador_paciente == 30): break
+        
     print("\nGerando grafico de acuracia(treinamento e validacao)\n")
+
     plt.figure(figsize=(10, 6))
     plt.plot(list(range(epoca_atual)), acuracias_treinamento, label='Acurácia Treinamento')
     plt.plot(list(range(epoca_atual)), acuracias_validacao, label='Acurácia Validação')
@@ -225,7 +234,9 @@ def treina_com_validacao_cruzada(train, resultado_esperado, validacao, resultado
     plt.title('Acurácia de Treinamento e Validação por Época')
     plt.legend()
     plt.show()
+
     print("\nGerando grafico da evolução do erro\n")
+    write_erro_por_epoca(resultado_somatoria_erro)
     plt.figure(figsize=(10, 6))
     plt.plot(list(range(epoca_atual)), resultado_somatoria_erro, label='Evolução do erro')
     plt.xlabel('Época')
@@ -261,7 +272,7 @@ def teste_multilayer_perceptron(pesos_camada_escondida, pesos_camada_saida, matr
     acertos = 0
     total = len(matriz_teste)
     resultado_predito = []
-
+    resultado_rede = []
     for treinamento_atual, resultado_esperado_atual in zip(matriz_teste, teste_resultado_esperado):
         # Feedforward
         Ni_camada_escondida = np.dot(treinamento_atual, pesos_camada_escondida) + bias_entrada_camada_escondida
@@ -269,7 +280,7 @@ def teste_multilayer_perceptron(pesos_camada_escondida, pesos_camada_saida, matr
 
         Ni_camada_saida = np.dot(ativacao_camada_escondida, pesos_camada_saida) + bias_saida_camada_escondida
         ativacao_camada_saida = ativacao(Ni_camada_saida)
-
+        resultado_rede.append(ativacao_camada_saida)
         # Calculo do erro
         erro = resultado_esperado_atual - ativacao_camada_saida
         somatorio_erro += np.mean(erro**2)
@@ -281,7 +292,7 @@ def teste_multilayer_perceptron(pesos_camada_escondida, pesos_camada_saida, matr
         resultado_predito.append(predito)
         if resultado_esperado_atual[indice_predito] == 1:
             acertos += 1
-            
+    write_resultado_rede(resultado_rede)
     acuracia_teste= acertos / total
     matriz = matriz_confusao(resultado_predito, teste_resultado_esperado)
     print(f'ACURACIA: {acuracia_teste}')
